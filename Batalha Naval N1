@@ -1,0 +1,93 @@
+#include <stdio.h>
+
+// Eu declaro as constantes aqui. Elas são como apelidos fixos para números.
+const int TAMANHO_TABULEIRO = 10;
+const int AGUA = 0;
+const int NAVIO = 3;
+
+// Eu crio a função para inicializar o tabuleiro e posicionar os navios.
+void inicializar_e_posicionar(int tabuleiro[10][10]) {
+    int i, j;
+
+    // 1. Eu começo inicializando a matriz 10x10.
+    // Eu preencho cada célula do meu tabuleiro com 0 (ÁGUA).
+    for (i = 0; i < TAMANHO_TABULEIRO; i++) {
+        for (j = 0; j < TAMANHO_TABULEIRO; j++) {
+            tabuleiro[i][j] = AGUA; // Eu uso 0
+        }
+    }
+
+
+    // 2. Eu posiciono o Navio Horizontal (Tamanho 3).
+    // Linha 3 (índice 2), Colunas C, D, E (índices 2, 3, 4).
+    int linha_h = 2; 
+    int coluna_inicio_h = 2; 
+    int tamanho_navio = 3; 
+
+    // Eu uso um loop para preencher as 3 células na horizontal.
+    for (j = 0; j < tamanho_navio; j++) {
+        // Eu garanto que o posicionamento está dentro do meu tabuleiro.
+        if (linha_h < TAMANHO_TABULEIRO && coluna_inicio_h + j < TAMANHO_TABULEIRO) {
+            tabuleiro[linha_h][coluna_inicio_h + j] = NAVIO; // Eu uso 3
+        }
+    }
+
+    // 3. Eu posiciono o Navio Vertical (Tamanho 3).
+    // Coluna H (índice 7), Linhas 6, 7, 8 (índices 5, 6, 7).
+    int coluna_v = 7; 
+    int linha_inicio_v = 5; 
+
+    // Eu uso este loop para preencher as 3 células na vertical.
+    for (i = 0; i < tamanho_navio; i++) {
+        // Novamente, eu verifico os limites para que o navio não caia no mar.
+        if (linha_inicio_v + i < TAMANHO_TABULEIRO && coluna_v < TAMANHO_TABULEIRO) {
+            tabuleiro[linha_inicio_v + i][coluna_v] = NAVIO; // Eu uso 3
+        }
+    }
+}
+
+// Eu crio a função para mostrar o meu tabuleiro no console.
+// Perceba que eu não posso usar TAMANHO_TABULEIRO na definição do parâmetro
+// da matriz aqui, pois ela deve ser um valor constante conhecido pelo compilador.
+// Então eu uso diretamente 10.
+void imprimir_tabuleiro(const int tabuleiro[10][10]) {
+    int i, j;
+    
+    // Eu imprimo o cabeçalho das colunas (A, B, C...)
+    printf("   "); 
+    // Como TAMANHO_TABULEIRO é 10, eu uso 'A' + 10 para terminar no 'J'.
+    for (char c = 'A'; c < 'A' + 10; c++) { 
+        printf("%c ", c);
+    }
+    printf("\n");
+
+    // Eu itero sobre as linhas para imprimir os dados.
+    for (i = 0; i < 10; i++) { // Eu uso o número 10 diretamente
+        // Eu imprimo o número da linha (1-baseado).
+        printf("%2d ", i + 1); 
+        
+        // Eu imprimo o conteúdo de cada célula.
+        for (j = 0; j < 10; j++) { // Eu uso o número 10 diretamente
+            printf("%d ", tabuleiro[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+// Esta é a função principal onde eu rodo o meu programa.
+int main() {
+    // Eu declaro minha matriz principal 10x10.
+    int tabuleiro[10][10];
+
+    printf("--- Jogo Batalha Naval  ---\n");
+    printf("Nomenclatura do Tabuleiro e Posicionamento Inicial:\n");
+    printf("0 = Água, 3 = Navio\n\n");
+
+    // Eu chamo minha função para montar o tabuleiro.
+    inicializar_e_posicionar(tabuleiro);
+
+    // E finalmente, eu mostro o tabuleiro pronto na tela.
+    imprimir_tabuleiro(tabuleiro);
+
+    return 0;
+}
