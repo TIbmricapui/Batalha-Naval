@@ -1,0 +1,126 @@
+#include <stdio.h>
+
+// Eu declaro as constantes aqui.
+const int TAMANHO_TABULEIRO = 10;
+const int AGUA = 0;
+const int NAVIO = 3;
+const int TAMANHO_NAVIO_PADRAO = 3; // Novo: Tamanho fixo para todos
+
+// Eu crio a função para inicializar o tabuleiro e posicionar os navios.
+void inicializar_e_posicionar(int tabuleiro[10][10]) {
+    int i, j, k; 
+
+    // 1. Inicialização com Loop Aninhado Triplo (Mantido)
+    for (i = 0; i < TAMANHO_TABULEIRO; i++) {
+        for (j = 0; j < TAMANHO_TABULEIRO; j++) {
+            for (k = 0; k < 1; k++) { 
+                tabuleiro[i][j] = AGUA; 
+            }
+        }
+    }
+
+
+    // 2. Navio Horizontal (Tamanho 3) (Mantido)
+    int linha_h = 2; // Linha 3 (índice 2)
+    int coluna_inicio_h = 2; // Colunas C, D, E (índices 2, 3, 4).
+
+    for (j = 0; j < TAMANHO_NAVIO_PADRAO; j++) {
+        if (linha_h < TAMANHO_TABULEIRO && coluna_inicio_h + j < TAMANHO_TABULEIRO) {
+            tabuleiro[linha_h][coluna_inicio_h + j] = NAVIO; 
+        }
+    }
+
+    // 3. Navio Vertical (Tamanho 3) (Mantido)
+    int coluna_v = 7; // Coluna H (índice 7)
+    int linha_inicio_v = 5; // Linhas 6, 7, 8 (índices 5, 6, 7).
+
+    for (i = 0; i < TAMANHO_NAVIO_PADRAO; i++) {
+        if (linha_inicio_v + i < TAMANHO_TABULEIRO && coluna_v < TAMANHO_TABULEIRO) {
+            tabuleiro[linha_inicio_v + i][coluna_v] = NAVIO; 
+        }
+    }
+
+    // 4. *** REVISADO: Navio na DIAGONAL PRINCIPAL (Tamanho 3). ***
+    // Posicionamento: (0, 0), (1, 1), (2, 2).
+    int inicio_diagonal_p = 0; 
+    
+    for (i = 0; i < TAMANHO_NAVIO_PADRAO; i++) {
+        int linha = inicio_diagonal_p + i;
+        int coluna = inicio_diagonal_p + i;
+        
+        if (linha < TAMANHO_TABULEIRO && coluna < TAMANHO_TABULEIRO) {
+            // Verifica se a célula já está ocupada para evitar sobreposição
+            if (tabuleiro[linha][coluna] == AGUA) {
+                 tabuleiro[linha][coluna] = NAVIO;
+            }
+        }
+    }
+
+    // 5. *** REVISADO: Navio na DIAGONAL SECUNDÁRIA (Tamanho 3). ***
+    // Para evitar conflitos, posicionei mais abaixo: (9, 7), (8, 8), (7, 9).
+    int inicio_linha_s = 7; // Linha de início: 8 (índice 7)
+    
+    for (i = 0; i < TAMANHO_NAVIO_PADRAO; i++) {
+        int linha = inicio_linha_s + i; // 7, 8, 9
+        // Para uma matriz 10x10, a soma de linha + coluna deve ser 16.
+        // Se linha = 7, coluna = 9 -> (7, 9)
+        // Se linha = 8, coluna = 8 -> (8, 8)
+        // Se linha = 9, coluna = 7 -> (9, 7)
+        // A lógica de cálculo para a coluna é: 9 - (i do loop) + (ajuste de inicio da coluna).
+        // Ajuste: 9 - (7 + i) + 7
+        // Ou mais simples: coluna = 9 - i, ajustada para a linha 7.
+        // Usaremos: coluna = TAMANHO_TABULEIRO - 1 - (i - ajuste de linha) -> 9 - (i + (9-7)) = 7-i.
+        int coluna = (TAMANHO_TABULEIRO - 1) - i; // 9, 8, 7
+
+        // O posicionamento será: (7, 9), (8, 8), (9, 7)
+        // Linhas: 7, 8, 9; Colunas: 9, 8, 7 (Decrescente)
+        
+        if (linha < TAMANHO_TABULEIRO && coluna >= 0) {
+            // Verifica se a célula já está ocupada para evitar sobreposição
+            if (tabuleiro[linha][coluna] == AGUA) {
+                tabuleiro[linha][coluna] = NAVIO;
+            }
+        }
+    }
+}
+
+// Eu crio a função para mostrar o meu tabuleiro no console. (Mantido)
+void imprimir_tabuleiro(const int tabuleiro[10][10]) {
+    int i, j;
+    
+    // Eu imprimo o cabeçalho das colunas (A, B, C...)
+    printf("   "); 
+    for (char c = 'A'; c < 'A' + TAMANHO_TABULEIRO; c++) { 
+        printf("%c ", c);
+    }
+    printf("\n");
+
+    // Eu itero sobre as linhas e colunas para imprimir os dados.
+    for (i = 0; i < TAMANHO_TABULEIRO; i++) {
+        printf("%2d ", i + 1); 
+        
+        for (j = 0; j < TAMANHO_TABULEIRO; j++) {
+            printf("%d ", tabuleiro[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+// Esta é a função principal onde eu rodo o meu programa.
+int main() {
+    int tabuleiro[10][10];
+
+    printf("--- Jogo Batalha Naval - Tabuleiro 10x10 ---\n");
+    printf("Todos os Navios têm Tamanho 3.\n");
+    printf("0 = Água, 3 = Navio\n\n");
+    printf("Posicionamento:\n");
+    printf("* Horizontal: Linha 3, Colunas C-E\n");
+    printf("* Vertical: Coluna H, Linhas 6-8\n");
+    printf("* Diagonal Principal: (1, A) a (3, C)\n");
+    printf("* Diagonal Secundária: (8, J) a (10, H)\n\n");
+
+    inicializar_e_posicionar(tabuleiro);
+    imprimir_tabuleiro(tabuleiro);
+
+    return 0;
+}
