@@ -1,0 +1,132 @@
+#include <stdio.h>
+
+#define TAMANHO_TABULEIRO 10
+#define TAM_HABILIDADE 5   // Eu defino o tamanho das habilidades fixas
+
+#define AGUA 0
+#define NAVIO 3
+#define AREA_HABILIDADE 5
+
+#define TAMANHO_NAVIO_PADRAO 3
+
+// ================= INICIALIZAÇÃO DO TABULEIRO =================
+void inicializar_e_posicionar(int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO]) {
+    // Eu começo preenchendo todo o tabuleiro com água
+    for(int i=0;i<TAMANHO_TABULEIRO;i++)
+        for(int j=0;j<TAMANHO_TABULEIRO;j++)
+            tabuleiro[i][j] = AGUA;
+
+    // Eu coloco os navios em posições fixas
+    for(int j=0;j<TAMANHO_NAVIO_PADRAO;j++) tabuleiro[2][2+j] = NAVIO;
+    for(int i=0;i<TAMANHO_NAVIO_PADRAO;i++) tabuleiro[5+i][7] = NAVIO;
+    for(int i=0;i<TAMANHO_NAVIO_PADRAO;i++) tabuleiro[i][i] = NAVIO;
+    for(int i=0;i<TAMANHO_NAVIO_PADRAO;i++) tabuleiro[7+i][9-i] = NAVIO;
+}
+
+// ================= MATRIZES FIXAS DAS HABILIDADES =================
+void criar_cone(int cone[TAM_HABILIDADE][TAM_HABILIDADE]) {
+    // Eu crio o formato do cone, que será a minha habilidade
+    int temp[TAM_HABILIDADE][TAM_HABILIDADE] = {
+        {0,0,5,0,0},
+        {0,5,5,5,0},
+        {5,5,5,5,5},
+        {0,0,0,0,0},
+        {0,0,0,0,0}
+    };
+    // Eu copio para a matriz que vou usar no tabuleiro
+    for(int i=0;i<TAM_HABILIDADE;i++)
+        for(int j=0;j<TAM_HABILIDADE;j++)
+            cone[i][j] = temp[i][j] ? 1 : 0;
+}
+
+void criar_cruz(int cruz[TAM_HABILIDADE][TAM_HABILIDADE]) {
+    // Eu crio a habilidade em forma de cruz
+    int temp[TAM_HABILIDADE][TAM_HABILIDADE] = {
+        {0,0,5,0,0},
+        {5,5,5,5,5},
+        {0,0,5,0,0},
+        {0,0,0,0,0},
+        {0,0,0,0,0}
+    };
+    for(int i=0;i<TAM_HABILIDADE;i++)
+        for(int j=0;j<TAM_HABILIDADE;j++)
+            cruz[i][j] = temp[i][j] ? 1 : 0;
+}
+
+void criar_octaedro(int octaedro[TAM_HABILIDADE][TAM_HABILIDADE]) {
+    // Eu crio a habilidade em forma de octaedro
+    int temp[TAM_HABILIDADE][TAM_HABILIDADE] = {
+        {0,0,5,0,0},
+        {0,5,5,5,0},
+        {0,0,5,0,0},
+        {0,0,0,0,0},
+        {0,0,0,0,0}
+    };
+    for(int i=0;i<TAM_HABILIDADE;i++)
+        for(int j=0;j<TAM_HABILIDADE;j++)
+            octaedro[i][j] = temp[i][j] ? 1 : 0;
+}
+
+// ================= APLICAR HABILIDADE =================
+void aplicar_habilidade(int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO],
+                        int habilidade[TAM_HABILIDADE][TAM_HABILIDADE],
+                        int origem_linha, int origem_coluna) {
+    // Eu calculo o deslocamento do centro da habilidade
+    int deslocamento = TAM_HABILIDADE/2;
+
+    // Eu percorro cada célula da habilidade
+    for(int i=0;i<TAM_HABILIDADE;i++)
+        for(int j=0;j<TAM_HABILIDADE;j++){
+            int linha_tab = origem_linha + i - deslocamento;
+            int coluna_tab = origem_coluna + j - deslocamento;
+
+            // Eu aplico a habilidade apenas se estiver dentro do tabuleiro e na água
+            if(linha_tab>=0 && linha_tab<TAMANHO_TABULEIRO &&
+               coluna_tab>=0 && coluna_tab<TAMANHO_TABULEIRO &&
+               habilidade[i][j]==1 && tabuleiro[linha_tab][coluna_tab]==AGUA)
+                tabuleiro[linha_tab][coluna_tab] = AREA_HABILIDADE;
+        }
+}
+
+// ================= IMPRIMIR TABULEIRO =================
+void imprimir_tabuleiro(int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO]) {
+    // Eu imprimo o cabeçalho com letras
+    printf("   ");
+    for(char c='A';c<'A'+TAMANHO_TABULEIRO;c++) printf("%c ",c);
+    printf("\n");
+
+    // Eu imprimo cada linha do tabuleiro
+    for(int i=0;i<TAMANHO_TABULEIRO;i++){
+        printf("%2d ", i+1);
+        for(int j=0;j<TAMANHO_TABULEIRO;j++)
+            printf("%d ", tabuleiro[i][j]);
+        printf("\n");
+    }
+}
+
+// ================= MAIN =================
+int main() {
+    int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO];
+    int cone[TAM_HABILIDADE][TAM_HABILIDADE];
+    int cruz[TAM_HABILIDADE][TAM_HABILIDADE];
+    int octaedro[TAM_HABILIDADE][TAM_HABILIDADE];
+
+    // Eu inicializo o tabuleiro e as habilidades
+    inicializar_e_posicionar(tabuleiro);
+    criar_cone(cone);
+    criar_cruz(cruz);
+    criar_octaedro(octaedro);
+
+    // Eu aplico cada habilidade no tabuleiro
+    // Ajustei a posição do cone para ele ficar completo
+    aplicar_habilidade(tabuleiro, cone, 3, 4);
+    aplicar_habilidade(tabuleiro, cruz, 5, 3);
+    aplicar_habilidade(tabuleiro, octaedro, 4, 8);
+
+    // Eu imprimo o tabuleiro final
+    printf("\n--- TABULEIRO COM HABILIDADES ESPECIAIS ---\n");
+    printf("0 = Agua | 3 = Navio | 5 = Area de Habilidade\n\n");
+    imprimir_tabuleiro(tabuleiro);
+
+    return 0;
+}
